@@ -10,7 +10,9 @@ const expenseSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
+    rejectionReason: { type: String, trim: true, default: "" },
     notes: { type: String, trim: true },
+    receiptUrl: { type: String, trim: true },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }

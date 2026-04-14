@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import cors from "cors";
+import path from "path";
+import fs from "fs";
 
 //Routes
 import authRoutes from "./routes/authRoutes.js";
@@ -17,8 +19,14 @@ dotenv.config();
 connectDB();
 
 const app = express();
+const uploadsPath = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadsPath)) {
+  fs.mkdirSync(uploadsPath, { recursive: true });
+}
+
 app.use(express.json());
-app.use(cors())
+app.use(cors());
+app.use("/uploads", express.static(uploadsPath));
 
 // Testing API
 app.get("/", (req, res) => {

@@ -20,10 +20,16 @@ const ExpenseForm = () => {
         date: "",
         notes: "",
     });
+    const [receipt, setReceipt] = useState(null);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleReceiptChange = (e) => {
+        const file = e.target.files?.[0] || null;
+        setReceipt(file);
     };
 
     const handleSubmit = async (e) => {
@@ -36,7 +42,16 @@ const ExpenseForm = () => {
         }
 
         try {
-            await createExpense(form);
+            const formData = new FormData();
+            formData.append("category", form.category);
+            formData.append("amount", form.amount);
+            formData.append("date", form.date);
+            formData.append("notes", form.notes);
+            if (receipt) {
+                formData.append("receipt", receipt);
+            }
+
+            await createExpense(formData);
             toast.success("Expense submitted");
             navigate("/dashboard");
         } catch (err) {
@@ -101,6 +116,16 @@ const ExpenseForm = () => {
                             value={form.notes}
                             onChange={handleChange}
                         />
+
+                        <Button variant="outlined" component="label" fullWidth>
+                            {receipt ? `Receipt: ${receipt.name}` : "Upload Receipt Image"}
+                            <input
+                                hidden
+                                accept="image/*"
+                                type="file"
+                                onChange={handleReceiptChange}
+                            />
+                        </Button>
 
                         <Button type="submit" variant="contained" color="primary" fullWidth>
                             Submit

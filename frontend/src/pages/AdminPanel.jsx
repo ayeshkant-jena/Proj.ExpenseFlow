@@ -8,6 +8,11 @@ import {
   Paper,
   MenuItem,
   TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Autocomplete,
 } from "@mui/material";
 import { toast } from "react-hot-toast";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -29,6 +34,13 @@ const AdminPanel = () => {
     startDate: "",
     endDate: "",
   });
+  const [sortOption, setSortOption] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
+  const [selectedReceiptUrl, setSelectedReceiptUrl] = useState("");
+  const [selectedExpenseId, setSelectedExpenseId] = useState("");
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
 
   const fetchAll = async () => {
     try {
@@ -42,14 +54,30 @@ const AdminPanel = () => {
     }
   };
 
-  const handleStatusChange = async (id, status) => {
+  const handleStatusChange = async (id, status, rejectionReason = "") => {
     try {
-      await updateExpenseStatus(id, status);
+      await updateExpenseStatus(id, status, rejectionReason);
       toast.success(`Marked as ${status}`);
+      setRejectDialogOpen(false);
+      setRejectReason("");
       fetchAll();
     } catch (err) {
-      toast.error("Status update failed");
+      toast.error(err.response?.data?.message || "Status update failed");
     }
+  };
+
+  const handleRejectClick = (id) => {
+    setSelectedExpenseId(id);
+    setRejectReason("");
+    setRejectDialogOpen(true);
+  };
+
+  const handleRejectSubmit = async () => {
+    if (!rejectReason.trim()) {
+      toast.error("Please enter a rejection reason");
+      return;
+    }
+    await handleStatusChange(selectedExpenseId, "rejected", rejectReason);
   };
 
   const handleExportCSV = () => {
@@ -64,6 +92,7 @@ const AdminPanel = () => {
         Amount: e.amount,
         Category: e.category,
         Status: e.status,
+        "Rejection Reason": e.rejectionReason || "",
         "User Name": e.user?.name || "",
         "User Email": e.user?.email || "",
         Date: new Date(e.date).toLocaleDateString(),
@@ -113,14 +142,43 @@ const AdminPanel = () => {
       );
     });
 
-    setFilteredExpenses(filtered);
-  }, [filters, expenses]);
+    let sortedExpenses = [...filtered];
+
+    if (sortOption === "category") {
+      sortedExpenses = sortedExpenses.sort((a, b) =>
+        a.category.localeCompare(b.category)
+      );
+    } else if (sortOption === "user") {
+      sortedExpenses = sortedExpenses.sort((a, b) =>
+        (a.user?.name || "").localeCompare(b.user?.name || "")
+      );
+    }
+
+    if (sortOrder === "desc") {
+      sortedExpenses.reverse();
+    }
+
+    setFilteredExpenses(sortedExpenses);
+  }, [filters, expenses, sortOption, sortOrder]);
 
   useEffect(() => {
     fetchAll();
   }, []);
 
   const categories = [...new Set(expenses.map((e) => e.category))];
+  const users = [...new Set(expenses.map((e) => e.user?.name).filter(Boolean))];
+
+  const handleOpenReceipt = (id, url) => {
+    setSelectedExpenseId(id);
+    setSelectedReceiptUrl(url);
+    setReceiptDialogOpen(true);
+  };
+
+  const handleCloseReceipt = () => {
+    setReceiptDialogOpen(false);
+    setSelectedReceiptUrl("");
+    setSelectedExpenseId("");
+  };
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: "#f9fafb", minHeight: "100vh" }}>
@@ -173,13 +231,20 @@ const AdminPanel = () => {
           </Grid>
 
           <Grid sx={{ gridColumn: 'span 2' }}>
-            <TextField
-              label="User Name"
+            <Autocomplete
+              freeSolo
+              options={users}
               value={filters.user}
-              onChange={(e) => setFilters({ ...filters, user: e.target.value })}
+              onInputChange={(event, value) => setFilters({ ...filters, user: value })}
               size="small"
-              fullWidth
-              sx={{ minWidth: 200 }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="User Name"
+                  fullWidth
+                  sx={{ minWidth: 200 }}
+                />
+              )}
             />
           </Grid>
 
@@ -211,6 +276,37 @@ const AdminPanel = () => {
               }}
               sx={{ minWidth: 200 }}
             />
+          </Grid>
+
+          <Grid sx={{ gridColumn: 'span 2' }}>
+            <TextField
+              select
+              label="Sort By"
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              size="small"
+              fullWidth
+              sx={{ minWidth: 200 }}
+            >
+              <MenuItem value="">None</MenuItem>
+              <MenuItem value="category">Category</MenuItem>
+              <MenuItem value="user">User</MenuItem>
+            </TextField>
+          </Grid>
+
+          <Grid sx={{ gridColumn: 'span 2' }}>
+            <TextField
+              select
+              label="Order"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              size="small"
+              fullWidth
+              sx={{ minWidth: 200 }}
+            >
+              <MenuItem value="asc">A → Z</MenuItem>
+              <MenuItem value="desc">Z → A</MenuItem>
+            </TextField>
           </Grid>
         </Grid>
       </Paper>
@@ -286,6 +382,11 @@ const AdminPanel = () => {
                       {expense.status}
                     </span>
                   </Typography>
+                  {expense.status === "rejected" && expense.rejectionReason && (
+                    <Typography color="error">
+                      <strong>Rejection Reason:</strong> {expense.rejectionReason}
+                    </Typography>
+                  )}
                   <Typography color="text.secondary">
                     <strong>User:</strong> {expense.user?.name}
                   </Typography>
@@ -304,6 +405,15 @@ const AdminPanel = () => {
                 </Box>
 
                 <Stack direction="row" spacing={2} mt={3}>
+                  {expense.receiptUrl && (
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => handleOpenReceipt(expense._id, expense.receiptUrl)}
+                    >
+                      View Receipt
+                    </Button>
+                  )}
                   <Button
                     variant="contained"
                     color="success"
@@ -320,9 +430,7 @@ const AdminPanel = () => {
                     color="error"
                     size="small"
                     startIcon={<CancelIcon />}
-                    onClick={() =>
-                      handleStatusChange(expense._id, "rejected")
-                    }
+                    onClick={() => handleRejectClick(expense._id)}
                   >
                     Reject
                   </Button>
@@ -332,6 +440,65 @@ const AdminPanel = () => {
           ))}
         </Grid>
       )}
+
+      <Dialog open={receiptDialogOpen} onClose={handleCloseReceipt} maxWidth="md" fullWidth>
+        <DialogTitle>Receipt Preview</DialogTitle>
+        <DialogContent sx={{ p: 0, minHeight: 300, display: "flex", justifyContent: "center", alignItems: "center" }}>
+          {selectedReceiptUrl ? (
+            <img
+              src={selectedReceiptUrl}
+              alt="Receipt preview"
+              style={{ width: "100%", maxHeight: 600, objectFit: "contain" }}
+            />
+          ) : (
+            <Typography sx={{ p: 4 }}>No receipt available.</Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseReceipt}>Close</Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => {
+              handleStatusChange(selectedExpenseId, "approved");
+              handleCloseReceipt();
+            }}
+          >
+            Approve
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              handleRejectClick(selectedExpenseId);
+              handleCloseReceipt();
+            }}
+          >
+            Reject
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={rejectDialogOpen} onClose={() => setRejectDialogOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Reject Expense</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Rejection Reason"
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+            fullWidth
+            multiline
+            rows={4}
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRejectDialogOpen(false)}>Cancel</Button>
+          <Button variant="contained" color="error" onClick={handleRejectSubmit}>
+            Reject
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

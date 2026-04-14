@@ -9,7 +9,7 @@ import {
     useMediaQuery,
     useTheme,
 } from "@mui/material";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LoginIcon from "@mui/icons-material/Login";
 import PersonIcon from "@mui/icons-material/Person";
@@ -45,7 +45,7 @@ const Header = () => {
                     sx={{ fontWeight: "bold", cursor: "pointer" }}
                     onClick={() => navigate("/dashboard")}
                 >
-                    TeamExpenseTracker
+                    ExpenseFlow
                 </Typography>
 
                 {token ? (
@@ -61,29 +61,69 @@ const Header = () => {
                         {isMobile ? (
                             <>
                                 <Tooltip title="Dashboard">
-                                    <IconButton component={RouterLink} to="/dashboard" color="inherit">
+                                    <IconButton
+                                        component={NavLink}
+                                        to="/dashboard"
+                                        end
+                                        style={({ isActive }) => ({
+                                            backgroundColor: isActive ? "rgba(255,255,255,0.15)" : undefined,
+                                            borderRadius: isActive ? 8 : undefined,
+                                        })}
+                                    >
                                         <DashboardIcon />
                                     </IconButton>
                                 </Tooltip>
                                 <Tooltip title="Add Expense">
-                                    <IconButton component={RouterLink} to="/add-expense" color="inherit">
+                                    <IconButton
+                                        component={NavLink}
+                                        to="/add-expense"
+                                        end
+                                        style={({ isActive }) => ({
+                                            backgroundColor: isActive ? "rgba(255,255,255,0.15)" : undefined,
+                                            borderRadius: isActive ? 8 : undefined,
+                                        })}
+                                    >
                                         <AddIcon />
                                     </IconButton>
                                 </Tooltip>
                                 {user?.role === "admin" && (
                                     <>
                                         <Tooltip title="Admin Panel">
-                                            <IconButton component={RouterLink} to="/admin" color="inherit">
+                                            <IconButton
+                                                component={NavLink}
+                                                to="/admin"
+                                                end
+                                                style={({ isActive }) => ({
+                                                    backgroundColor: isActive ? "rgba(255,255,255,0.15)" : undefined,
+                                                    borderRadius: isActive ? 8 : undefined,
+                                                })}
+                                            >
                                                 <AdminPanelSettingsIcon />
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title="Audit Logs">
-                                            <IconButton component={RouterLink} to="/audit-logs" color="inherit">
+                                            <IconButton
+                                                component={NavLink}
+                                                to="/audit-logs"
+                                                end
+                                                style={({ isActive }) => ({
+                                                    backgroundColor: isActive ? "rgba(255,255,255,0.15)" : undefined,
+                                                    borderRadius: isActive ? 8 : undefined,
+                                                })}
+                                            >
                                                 <ListAltIcon />
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title="Insights">
-                                            <IconButton component={RouterLink} to="/insights" color="inherit">
+                                            <IconButton
+                                                component={NavLink}
+                                                to="/insights"
+                                                end
+                                                style={({ isActive }) => ({
+                                                    backgroundColor: isActive ? "rgba(255,255,255,0.15)" : undefined,
+                                                    borderRadius: isActive ? 8 : undefined,
+                                                })}
+                                            >
                                                 <InsightsIcon />
                                             </IconButton>
                                         </Tooltip>
@@ -92,21 +132,71 @@ const Header = () => {
                             </>
                         ) : (
                             <>
-                                <Button component={RouterLink} to="/dashboard" color="inherit">
+                                <Button
+                                    component={NavLink}
+                                    to="/dashboard"
+                                    end
+                                    style={({ isActive }) => ({
+                                        color: "inherit",
+                                        backgroundColor: isActive ? "rgba(255,255,255,0.15)" : undefined,
+                                        borderRadius: 8,
+                                        fontWeight: isActive ? 700 : 500,
+                                    })}
+                                >
                                     Dashboard
                                 </Button>
-                                <Button component={RouterLink} to="/add-expense" color="inherit">
+                                <Button
+                                    component={NavLink}
+                                    to="/add-expense"
+                                    end
+                                    style={({ isActive }) => ({
+                                        color: "inherit",
+                                        backgroundColor: isActive ? "rgba(255,255,255,0.15)" : undefined,
+                                        borderRadius: 8,
+                                        fontWeight: isActive ? 700 : 500,
+                                    })}
+                                >
                                     Add Expense
                                 </Button>
                                 {user?.role === "admin" && (
                                     <>
-                                        <Button component={RouterLink} to="/admin" color="inherit">
+                                        <Button
+                                            component={NavLink}
+                                            to="/admin"
+                                            end
+                                            style={({ isActive }) => ({
+                                                color: "inherit",
+                                                backgroundColor: isActive ? "rgba(255,255,255,0.15)" : undefined,
+                                                borderRadius: 8,
+                                                fontWeight: isActive ? 700 : 500,
+                                            })}
+                                        >
                                             Admin Panel
                                         </Button>
-                                        <Button component={RouterLink} to="/audit-logs" color="inherit">
+                                        <Button
+                                            component={NavLink}
+                                            to="/audit-logs"
+                                            end
+                                            style={({ isActive }) => ({
+                                                color: "inherit",
+                                                backgroundColor: isActive ? "rgba(255,255,255,0.15)" : undefined,
+                                                borderRadius: 8,
+                                                fontWeight: isActive ? 700 : 500,
+                                            })}
+                                        >
                                             Audit Logs
                                         </Button>
-                                        <Button component={RouterLink} to="/insights" color="inherit">
+                                        <Button
+                                            component={NavLink}
+                                            to="/insights"
+                                            end
+                                            style={({ isActive }) => ({
+                                                color: "inherit",
+                                                backgroundColor: isActive ? "rgba(255,255,255,0.15)" : undefined,
+                                                borderRadius: 8,
+                                                fontWeight: isActive ? 700 : 500,
+                                            })}
+                                        >
                                             Insights
                                         </Button>
                                     </>
@@ -135,7 +225,7 @@ const Header = () => {
                     </Box>
                 ) : (
                     <Box>
-                        <Button component={RouterLink} to="/" color="inherit" startIcon={<LoginIcon />}>
+                        <Button component={NavLink} to="/" color="inherit" startIcon={<LoginIcon />}>
                             Login
                         </Button>
                     </Box>

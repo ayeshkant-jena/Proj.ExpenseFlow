@@ -4,7 +4,12 @@ import AuditLog from "../models/AuditLog.js";
 // Add an expense
 export const addExpense = async (req, res) => {
   try {
-    const expense = await Expense.create({ ...req.body, user: req.user._id });
+    const expenseData = { ...req.body, user: req.user._id };
+    if (req.file) {
+      expenseData.receiptUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+    }
+
+    const expense = await Expense.create(expenseData);
 
     // Log the creation to AuditLog
     await AuditLog.create({
@@ -48,13 +53,71 @@ export const getAllExpenses = async (req, res) => {
   }
 };
 
+// User: Update rejected expense and resubmit
+export const updateExpense = async (req, res) => {
+  try {
+    const expense = await Expense.findById(req.params.id);
+
+    if (!expense) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
+
+    if (expense.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized to update this expense" });
+    }
+
+    if (expense.status !== "rejected" && expense.status !== "pending") {
+      return res.status(400).json({ message: "Only pending or rejected expenses can be updated" });
+    }
+
+    const { category, amount, date, notes } = req.body;
+
+    if (category) expense.category = category;
+    if (amount) {
+      const parsedAmount = parseFloat(amount);
+      if (Number.isNaN(parsedAmount) || parsedAmount <= 0) {
+        return res.status(400).json({ message: "Amount must be greater than zero" });
+      }
+      expense.amount = parsedAmount;
+    }
+    if (date) expense.date = date;
+    if (notes !== undefined) expense.notes = notes;
+
+    if (req.file) {
+      expense.receiptUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+    }
+
+    expense.status = "pending";
+    expense.rejectionReason = "";
+
+    await expense.save();
+
+    await AuditLog.create({
+      user: req.user._id,
+      targetUser: req.user._id,
+      action: "Expense Resubmitted",
+      userRole: req.user.role,
+      details: `${req.user.email} updated and resubmitted expense ₹${expense.amount} for ${expense.category}`,
+    });
+
+    res.status(200).json({ message: "Expense updated and resubmitted", expense });
+  } catch (err) {
+    console.error("Update Expense Error:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 // Admin: Update expense status
 export const updateExpenseStatus = async (req, res) => {
-  const { status } = req.body;
+  const { status, rejectionReason } = req.body;
 
   const allowedStatuses = ["pending", "approved", "rejected"];
   if (!allowedStatuses.includes(status)) {
     return res.status(400).json({ message: "Invalid status value" });
+  }
+
+  if (status === "rejected" && !rejectionReason?.trim()) {
+    return res.status(400).json({ message: "Rejection reason is required" });
   }
 
   try {
@@ -74,6 +137,7 @@ export const updateExpenseStatus = async (req, res) => {
     }
 
     expense.status = status;
+    expense.rejectionReason = status === "rejected" ? rejectionReason : "";
     await expense.save();
 
     await AuditLog.create({
