@@ -20,7 +20,7 @@ const RegisterPage = () => {
         name: "",
         email: "",
         password: "",
-        role: "employee",
+        role: "",
     });
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
@@ -58,10 +58,11 @@ const RegisterPage = () => {
                 <Typography variant="h5" gutterBottom align="center" sx={{ fontWeight: "bold" }}>
                     Register
                 </Typography>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} autoComplete="off">
                     <TextField
                         name="name"
                         label="Name"
+                        autoComplete="name"
                         fullWidth
                         margin="normal"
                         onChange={handleChange}
@@ -70,6 +71,8 @@ const RegisterPage = () => {
                     <TextField
                         name="email"
                         label="Email"
+                        type="email"
+                        autoComplete="email"
                         fullWidth
                         margin="normal"
                         onChange={handleChange}
@@ -79,6 +82,7 @@ const RegisterPage = () => {
                         name="password"
                         label="Password"
                         type={showPassword ? "text" : "password"}
+                        autoComplete="new-password"
                         fullWidth
                         margin="normal"
                         onChange={handleChange}
@@ -106,7 +110,11 @@ const RegisterPage = () => {
                         margin="normal"
                         value={formData.role}
                         onChange={handleChange}
+                        required
                     >
+                        <MenuItem value="" disabled>
+                            Select a role
+                        </MenuItem>
                         <MenuItem value="employee">Employee</MenuItem>
                         <MenuItem value="admin">Admin</MenuItem>
                     </TextField>

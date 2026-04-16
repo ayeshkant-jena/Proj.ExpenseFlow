@@ -102,11 +102,15 @@ const LoginPage = () => {
                             Login to your account and manage expenses, view insights, and stay in control.
                         </Typography>
 
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit} autoComplete="off">
+                            <input type="text" name="fakeusernameremembered" autoComplete="username" style={{ display: 'none' }} />
+                            <input type="password" name="fakepasswordremembered" autoComplete="new-password" style={{ display: 'none' }} />
                             <Box mb={3}>
                                 <TextField
+                                    name="email"
                                     label="Email"
                                     type="email"
+                                    autoComplete="off"
                                     fullWidth
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -116,8 +120,10 @@ const LoginPage = () => {
 
                             <Box mb={3}>
                                 <TextField
+                                    name="password"
                                     label="Password"
                                     type={showPassword ? 'text' : 'password'}
+                                    autoComplete="new-password"
                                     fullWidth
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
