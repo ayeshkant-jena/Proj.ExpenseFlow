@@ -5,7 +5,7 @@ const Footer = () => {
     <Box
       className="text-center"
       sx={{
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "#1976D2",
         padding: "1rem",
         position: "relative",
         bottom: 0,
@@ -13,7 +13,7 @@ const Footer = () => {
         mt: 4,
       }}
     >
-      <Typography variant="body2" color="textSecondary">
+      <Typography variant="body2" color="white">
         © {new Date().getFullYear()} ExpenseFlow · Built by Ayeshkant Jena
       </Typography>
     </Box>
