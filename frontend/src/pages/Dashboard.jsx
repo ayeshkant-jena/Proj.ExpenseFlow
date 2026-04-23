@@ -122,89 +122,95 @@ const Dashboard = () => {
     }
 
     return (
-        <Box className="p-6 bg-gray-100 min-h-screen">
-            <Typography variant="h5" gutterBottom align="center" sx={{ fontWeight: "bold" }}>
-                My Expenses
-            </Typography>
-
-            {error ? (
-                <Alert severity="error">{error}</Alert>
-            ) : expenses.length === 0 ? (
-                <Box
-                    sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        minHeight: "80vh",
-                    }}
-                >
-                    <Typography
-                        variant="h6"
-                        align="center"
-                        sx={{ fontWeight: "bold", color: "text.secondary" }}
-                    >
-                        No expenses found.
+        <Box className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 px-4 py-8">
+            <Box className="max-w-7xl mx-auto">
+                <Box className="text-center mb-8">
+                    <Typography variant="h4" sx={{ fontWeight: 900, color: 'white', letterSpacing: '-0.04em', mb: 2 }}>
+                        My Expenses Dashboard
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.78)' }}>
+                        Track and manage all your submitted expenses in one place
                     </Typography>
                 </Box>
-            ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-                    {expenses.map((expense) => (
-                        <Card key={expense._id}>
-                            <CardContent>
-                                <Typography variant="h6" gutterBottom>
-                                    {expense.category}
-                                </Typography>
-                                <Typography>Amount: ₹{expense.amount}</Typography>
-                                <Typography>
-                                    Date: {new Date(expense.date).toLocaleDateString()}
-                                </Typography>
-                                <Typography sx={{ mt: 1 }}>
-                                    <strong>Status:</strong>{" "}
-                                    <span
-                                        style={{
-                                            color:
-                                                expense.status === "approved"
-                                                    ? "green"
-                                                    : expense.status === "rejected"
-                                                        ? "red"
-                                                        : "#666",
-                                            fontWeight: 600,
-                                        }}
-                                    >
-                                        {expense.status}
-                                    </span>
-                                </Typography>
-                                {expense.status === "rejected" && expense.rejectionReason && (
-                                    <Typography color="error" sx={{ mt: 1 }}>
-                                        <strong>Rejection Reason:</strong> {expense.rejectionReason}
-                                    </Typography>
-                                )}
-                                {expense.notes && (
-                                    <Typography color="textSecondary" sx={{ mt: 1 }}>
-                                        Note: {expense.notes}
-                                    </Typography>
-                                )}
-                                {expense.receiptUrl && (
-                                    <CardMedia
-                                        component="img"
-                                        image={expense.receiptUrl}
-                                        alt="Expense receipt"
-                                        sx={{ height: 140, objectFit: "contain", mt: 1, borderRadius: 1 }}
-                                    />
-                                )}
-                            </CardContent>
-                            {expense.status === "rejected" && (
-                                <Box sx={{ p: 2, pt: 0 }}>
-                                    <Button fullWidth variant="contained" onClick={() => handleEditClick(expense)}>
-                                        Edit & Resubmit
-                                    </Button>
-                                </Box>
-                            )}
-                        </Card>
-                    ))}
-                </div>
-            )}
 
+                {error ? (
+                    <Box className="flex justify-center">
+                        <Alert severity="error" sx={{ maxWidth: 600, bgcolor: 'rgba(255,255,255,0.95)', color: 'text.primary' }}>{error}</Alert>
+                    </Box>
+                ) : expenses.length === 0 ? (
+                    <Box className="flex justify-center items-center min-h-[60vh]">
+                        <Box className="text-center">
+                            <Typography variant="h6" sx={{ color: 'white', fontWeight: 700, mb: 2 }}>
+                                No expenses found
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                                Start by submitting your first expense to see it here.
+                            </Typography>
+                        </Box>
+                    </Box>
+                ) : (
+                    <Box className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {expenses.map((expense) => (
+                            <Card key={expense._id} sx={{ bgcolor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)', borderRadius: 4, boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}>
+                                <CardContent sx={{ p: 3 }}>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                                        <Typography variant="h6" sx={{ fontWeight: 800, color: 'primary.main' }}>
+                                            {expense.category}
+                                        </Typography>
+                                        <Box sx={{
+                                            px: 2, py: 0.5, borderRadius: 2, fontSize: '0.75rem', fontWeight: 700,
+                                            bgcolor: expense.status === "approved" ? 'success.main' : expense.status === "rejected" ? 'error.main' : 'warning.main',
+                                            color: 'white'
+                                        }}>
+                                            {expense.status}
+                                        </Box>
+                                    </Box>
+
+                                    <Typography variant="h5" sx={{ fontWeight: 900, mb: 1 }}>
+                                        ₹{expense.amount}
+                                    </Typography>
+
+                                    <Typography sx={{ color: 'text.secondary', mb: 2 }}>
+                                        {new Date(expense.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                    </Typography>
+
+                                    {expense.status === "rejected" && expense.rejectionReason && (
+                                        <Typography sx={{ color: 'error.main', fontSize: '0.875rem', mb: 2, fontWeight: 600 }}>
+                                            Reason: {expense.rejectionReason}
+                                        </Typography>
+                                    )}
+
+                                    {expense.notes && (
+                                        <Typography sx={{ color: 'text.secondary', fontSize: '0.875rem', mb: 2 }}>
+                                            {expense.notes}
+                                        </Typography>
+                                    )}
+
+                                    {expense.receiptUrl && (
+                                        <Box sx={{ mt: 2, borderRadius: 2, overflow: 'hidden' }}>
+                                            <img
+                                                src={expense.receiptUrl}
+                                                alt="Expense receipt"
+                                                style={{ width: '100%', height: 120, objectFit: 'cover' }}
+                                            />
+                                        </Box>
+                                    )}
+                                </CardContent>
+
+                                {expense.status === "rejected" && (
+                                    <Box sx={{ p: 3, pt: 0 }}>
+                                        <Button fullWidth variant="contained" onClick={() => handleEditClick(expense)} sx={{ fontWeight: 700, textTransform: 'capitalize' }}>
+                                            Edit & Resubmit
+                                        </Button>
+                                    </Box>
+                                )}
+                            </Card>
+                        ))}
+                    </Box>
+                )}
+            </Box>
+
+            {/* Edit Dialog */}
             <Dialog open={editDialogOpen} onClose={handleCloseEdit} fullWidth maxWidth="sm">
                 <DialogTitle>Edit & Resubmit Expense</DialogTitle>
                 <form onSubmit={handleEditSubmit}>
@@ -268,7 +274,7 @@ const Dashboard = () => {
                     <DialogActions>
                         <Button onClick={handleCloseEdit}>Cancel</Button>
                         <Button type="submit" variant="contained">
-                            Submit
+                            Update
                         </Button>
                     </DialogActions>
                 </form>

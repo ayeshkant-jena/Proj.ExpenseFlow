@@ -143,99 +143,104 @@ const Insights = () => {
     }
 
     return (
-        <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: "#f6f7fb", minHeight: "100vh" }}>
-            <Typography
-                variant="h5"
-                align="center"
-                gutterBottom
-                sx={{ fontWeight: "bold", mb: 3 }}
-            >
-                Expense Insights
-            </Typography>
-
-            <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
-                <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 600 }}>
-                    Filter insights by status, category, and date range
-                </Typography>
-                <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={12} sm={6} md={3}>
-                        <TextField
-                            select
-                            label="Status"
-                            value={filters.status}
-                            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                            size="small"
-                            fullWidth
-                        >
-                            <MenuItem value="">All</MenuItem>
-                            <MenuItem value="pending">Pending</MenuItem>
-                            <MenuItem value="approved">Approved</MenuItem>
-                            <MenuItem value="rejected">Rejected</MenuItem>
-                        </TextField>
-                    </Grid>
-
-                    <Grid item xs={12} sm={6} md={3}>
-                        <TextField
-                            select
-                            label="Category"
-                            value={filters.category}
-                            onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-                            size="small"
-                            fullWidth
-                        >
-                            <MenuItem value="">All</MenuItem>
-                            {categories.map((category) => (
-                                <MenuItem key={category} value={category}>
-                                    {category}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </Grid>
-
-                    <Grid item xs={12} sm={6} md={3}>
-                        <TextField
-                            label="Start date"
-                            type="date"
-                            size="small"
-                            fullWidth
-                            value={filters.startDate}
-                            onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-                            InputLabelProps={{ shrink: true }}
-                        />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6} md={3}>
-                        <TextField
-                            label="End date"
-                            type="date"
-                            size="small"
-                            fullWidth
-                            value={filters.endDate}
-                            onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-                            InputLabelProps={{ shrink: true }}
-                        />
-                    </Grid>
-
-                    <Grid item xs={12} sx={{ textAlign: { xs: "left", md: "right" } }}>
-                        <Button variant="outlined" size="small" onClick={resetFilters}>
-                            Reset filters
-                        </Button>
-                    </Grid>
-                </Grid>
-            </Paper>
-
-            {!filteredExpenses.length ? (
-                <Paper elevation={2} sx={{ p: 4, textAlign: "center" }}>
-                    <Typography variant="h6" color="text.secondary">
-                        No expenses match the selected filters.
+        <Box className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 px-4 py-8">
+            <Box className="max-w-7xl mx-auto">
+                <Box className="text-center mb-8">
+                    <Typography variant="h4" sx={{ fontWeight: 900, color: 'white', letterSpacing: '-0.04em', mb: 2 }}>
+                        Expense Insights & Analytics
                     </Typography>
+                    <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.78)' }}>
+                        Visualize your spending patterns and trends with interactive charts
+                    </Typography>
+                </Box>
+
+                <Paper elevation={6} sx={{ p: 4, mb: 6, bgcolor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)', borderRadius: 4 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 800, mb: 3, color: 'primary.main' }}>
+                        Filter Your Data
+                    </Typography>
+                    <Grid container spacing={3} alignItems="center">
+                        <Grid item xs={12} sm={6} md={3}>
+                            <TextField
+                                select
+                                label="Status"
+                                value={filters.status}
+                                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                                size="small"
+                                fullWidth
+                            >
+                                <MenuItem value="">All</MenuItem>
+                                <MenuItem value="pending">Pending</MenuItem>
+                                <MenuItem value="approved">Approved</MenuItem>
+                                <MenuItem value="rejected">Rejected</MenuItem>
+                            </TextField>
+                        </Grid>
+
+                        <Grid item xs={12} sm={6} md={3}>
+                            <TextField
+                                select
+                                label="Category"
+                                value={filters.category}
+                                onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+                                size="small"
+                                fullWidth
+                            >
+                                <MenuItem value="">All</MenuItem>
+                                {categories.map((category) => (
+                                    <MenuItem key={category} value={category}>
+                                        {category}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </Grid>
+
+                        <Grid item xs={12} sm={6} md={3}>
+                            <TextField
+                                label="Start date"
+                                type="date"
+                                size="small"
+                                fullWidth
+                                value={filters.startDate}
+                                onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+                                InputLabelProps={{ shrink: true }}
+                            />
+                        </Grid>
+
+                        <Grid item xs={12} sm={6} md={3}>
+                            <TextField
+                                label="End date"
+                                type="date"
+                                size="small"
+                                fullWidth
+                                value={filters.endDate}
+                                onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+                                InputLabelProps={{ shrink: true }}
+                            />
+                        </Grid>
+
+                        <Grid item xs={12} sx={{ textAlign: { xs: "left", md: "right" } }}>
+                            <Button variant="outlined" size="small" onClick={resetFilters} sx={{ fontWeight: 600, textTransform: 'capitalize' }}>
+                                Reset Filters
+                            </Button>
+                        </Grid>
+                    </Grid>
                 </Paper>
-            ) : (
-                <Grid container spacing={3}>
-                    {/* Monthly Expense Trend */}
-                    <Grid item xs={12} md={6}>
-                        <Paper elevation={3} sx={{ p: 3, minHeight: 480 }}>
-                            <Typography variant="h6" gutterBottom>
+
+                {!filteredExpenses.length ? (
+                    <Box className="flex justify-center items-center min-h-[60vh]">
+                        <Box className="text-center">
+                            <Typography variant="h6" sx={{ color: 'white', fontWeight: 700, mb: 2 }}>
+                                No expenses match the selected filters
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                                Try adjusting your filter criteria to see insights.
+                            </Typography>
+                        </Box>
+                    </Box>
+                ) : (
+                    <Box className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Monthly Expense Trend */}
+                        <Paper elevation={6} sx={{ p: 4, bgcolor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)', borderRadius: 4, boxShadow: '0 20px 40px rgba(0,0,0,0.15)', minHeight: 500 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 800, mb: 3, color: 'primary.main' }}>
                                 Monthly Expense Trend
                             </Typography>
                             <ResponsiveContainer width="100%" height={400}>
@@ -254,12 +259,10 @@ const Insights = () => {
                                 </LineChart>
                             </ResponsiveContainer>
                         </Paper>
-                    </Grid>
 
-                    {/* Total Expenses by Category */}
-                    <Grid item xs={12} md={6}>
-                        <Paper elevation={3} sx={{ p: 3, minHeight: 480 }}>
-                            <Typography variant="h6" gutterBottom>
+                        {/* Total Expenses by Category */}
+                        <Paper elevation={6} sx={{ p: 4, bgcolor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)', borderRadius: 4, boxShadow: '0 20px 40px rgba(0,0,0,0.15)', minHeight: 500 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 800, mb: 3, color: 'primary.main' }}>
                                 Total Expenses by Category
                             </Typography>
                             <ResponsiveContainer width="100%" height={400}>
@@ -272,12 +275,10 @@ const Insights = () => {
                                 </BarChart>
                             </ResponsiveContainer>
                         </Paper>
-                    </Grid>
 
-                    {/* Expense Distribution */}
-                    <Grid item xs={12} md={6}>
-                        <Paper elevation={3} sx={{ p: 3, minHeight: 480 }}>
-                            <Typography variant="h6" gutterBottom>
+                        {/* Expense Distribution */}
+                        <Paper elevation={6} sx={{ p: 4, bgcolor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)', borderRadius: 4, boxShadow: '0 20px 40px rgba(0,0,0,0.15)', minHeight: 500 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 800, mb: 3, color: 'primary.main' }}>
                                 Expense Distribution
                             </Typography>
                             <ResponsiveContainer width="100%" height={400}>
@@ -299,12 +300,10 @@ const Insights = () => {
                                 </PieChart>
                             </ResponsiveContainer>
                         </Paper>
-                    </Grid>
 
-                    {/* Weekly Spending Pattern */}
-                    <Grid item xs={12} md={6}>
-                        <Paper elevation={3} sx={{ p: 3, minHeight: 480 }}>
-                            <Typography variant="h6" gutterBottom>
+                        {/* Weekly Spending Pattern */}
+                        <Paper elevation={6} sx={{ p: 4, bgcolor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)', borderRadius: 4, boxShadow: '0 20px 40px rgba(0,0,0,0.15)', minHeight: 500 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 800, mb: 3, color: 'primary.main' }}>
                                 Weekly Spending Pattern
                             </Typography>
                             <ResponsiveContainer width="100%" height={400}>
@@ -317,12 +316,10 @@ const Insights = () => {
                                 </BarChart>
                             </ResponsiveContainer>
                         </Paper>
-                    </Grid>
 
-                    {/* Cumulative Monthly Expenses */}
-                    <Grid item xs={12} md={6}>
-                        <Paper elevation={3} sx={{ p: 3, minHeight: 480 }}>
-                            <Typography variant="h6" gutterBottom>
+                        {/* Cumulative Monthly Expenses */}
+                        <Paper elevation={6} sx={{ p: 4, bgcolor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)', borderRadius: 4, boxShadow: '0 20px 40px rgba(0,0,0,0.15)', minHeight: 500 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 800, mb: 3, color: 'primary.main' }}>
                                 Cumulative Monthly Expenses
                             </Typography>
                             <ResponsiveContainer width="100%" height={400}>
@@ -341,9 +338,9 @@ const Insights = () => {
                                 </AreaChart>
                             </ResponsiveContainer>
                         </Paper>
-                    </Grid>
-                </Grid>
-            )}
+                    </Box>
+                )}
+            </Box>
         </Box>
     );
 };

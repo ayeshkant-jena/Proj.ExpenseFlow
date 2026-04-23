@@ -181,324 +181,333 @@ const AdminPanel = () => {
   };
 
   return (
-    <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: "#f9fafb", minHeight: "100vh" }}>
-      <Typography
-        variant="h5"
-        align="center"
-        gutterBottom
-        sx={{ fontWeight: "bold", mb: 3 }}
-      >
-        Admin Panel – All Expenses
-      </Typography>
-
-      {/* FILTERS */}
-      <Paper elevation={1} sx={{ p: 2, mb: 4 }}>
-        <Grid container spacing={2} columns={12} justifyContent="center">
-          <Grid sx={{ gridColumn: 'span 2' }}>
-            <TextField
-              select
-              label="Status"
-              value={filters.status}
-              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-              size="small"
-              fullWidth
-              sx={{ minWidth: 200 }}
-            >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="pending">Pending</MenuItem>
-              <MenuItem value="approved">Approved</MenuItem>
-              <MenuItem value="rejected">Rejected</MenuItem>
-            </TextField>
-          </Grid>
-
-          <Grid sx={{ gridColumn: 'span 2' }}>
-            <TextField
-              select
-              label="Category"
-              value={filters.category}
-              onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-              size="small"
-              fullWidth
-              sx={{ minWidth: 200 }}
-            >
-              <MenuItem value="">All</MenuItem>
-              {categories.map((cat) => (
-                <MenuItem key={cat} value={cat}>
-                  {cat}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
-          <Grid sx={{ gridColumn: 'span 2' }}>
-            <Autocomplete
-              freeSolo
-              options={users}
-              value={filters.user}
-              onInputChange={(event, value) => setFilters({ ...filters, user: value })}
-              size="small"
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="User Name"
-                  fullWidth
-                  sx={{ minWidth: 200 }}
-                />
-              )}
-            />
-          </Grid>
-
-          <Grid sx={{ gridColumn: 'span 3' }}>
-            <TextField
-              label="Start Date"
-              type="date"
-              size="small"
-              fullWidth
-              value={filters.startDate}
-              onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-              slotProps={{
-                inputLabel: { shrink: true }
-              }}
-              sx={{ minWidth: 200 }}
-            />
-          </Grid>
-
-          <Grid sx={{ gridColumn: 'span 3' }}>
-            <TextField
-              label="End Date"
-              type="date"
-              size="small"
-              fullWidth
-              value={filters.endDate}
-              onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-              slotProps={{
-                inputLabel: { shrink: true }
-              }}
-              sx={{ minWidth: 200 }}
-            />
-          </Grid>
-
-          <Grid sx={{ gridColumn: 'span 2' }}>
-            <TextField
-              select
-              label="Sort By"
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
-              size="small"
-              fullWidth
-              sx={{ minWidth: 200 }}
-            >
-              <MenuItem value="">None</MenuItem>
-              <MenuItem value="category">Category</MenuItem>
-              <MenuItem value="user">User</MenuItem>
-            </TextField>
-          </Grid>
-
-          <Grid sx={{ gridColumn: 'span 2' }}>
-            <TextField
-              select
-              label="Order"
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              size="small"
-              fullWidth
-              sx={{ minWidth: 200 }}
-            >
-              <MenuItem value="asc">A → Z</MenuItem>
-              <MenuItem value="desc">Z → A</MenuItem>
-            </TextField>
-          </Grid>
-        </Grid>
-      </Paper>
-
-      {/* CSV BUTTON SECTION */}
-      <Box
-        display="flex"
-        justifyContent="flex-end"
-        alignItems="center"
-        sx={{ mb: 3 }}
-      >
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleExportCSV}
-          startIcon={<DownloadIcon />}
-          sx={{
-            textTransform: "none",
-            fontWeight: 600,
-            borderRadius: 2,
-            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-            px: 3,
-            py: 1,
-          }}
-        >
-          Export CSV
-        </Button>
-      </Box>
-
-      {/* EXPENSE LIST */}
-      {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
-          <CircularProgress size={50} />
+    <Box className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 px-4 py-8">
+      <Box className="max-w-7xl mx-auto">
+        <Box className="text-center mb-8">
+          <Typography variant="h4" sx={{ fontWeight: 900, color: 'white', letterSpacing: '-0.04em', mb: 2 }}>
+            Admin Panel – All Expenses
+          </Typography>
+          <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.78)' }}>
+            Manage and review all submitted expenses across the system
+          </Typography>
         </Box>
-      ) : filteredExpenses.length === 0 ? (
-        <Typography align="center" color="text.secondary">
-          No expenses match the filters.
-        </Typography>
-      ) : (
-        <Grid container spacing={3}>
-          {filteredExpenses.map((expense) => (
-            <Grid key={expense._id} size={{ xs: 12, sm: 6, md: 4 }}>
-              <Paper
-                elevation={3}
-                sx={{
-                  p: 3,
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                }}
+
+        {/* FILTERS */}
+        <Paper elevation={6} sx={{ p: 4, mb: 6, bgcolor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)', borderRadius: 4 }}>
+          <Typography variant="h6" sx={{ fontWeight: 800, mb: 3, color: 'primary.main' }}>
+            Filter & Sort Expenses
+          </Typography>
+          <Grid container spacing={3} columns={12} justifyContent="center">
+            <Grid sx={{ gridColumn: 'span 2' }}>
+              <TextField
+                select
+                label="Status"
+                value={filters.status}
+                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                size="small"
+                fullWidth
+                sx={{ minWidth: 200 }}
               >
-                <Box>
-                  <Typography variant="h6" gutterBottom>
-                    {expense.category}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    <strong>Amount:</strong> ₹{expense.amount}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    <strong>Status:</strong>{" "}
-                    <span
-                      style={{
-                        color:
-                          expense.status === "approved"
-                            ? "green"
-                            : expense.status === "rejected"
-                              ? "red"
-                              : "#666",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {expense.status}
-                    </span>
-                  </Typography>
-                  {expense.status === "rejected" && expense.rejectionReason && (
-                    <Typography color="error">
-                      <strong>Rejection Reason:</strong> {expense.rejectionReason}
-                    </Typography>
-                  )}
-                  <Typography color="text.secondary">
-                    <strong>User:</strong> {expense.user?.name}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    <strong>Email:</strong> {expense.user?.email}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    <strong>Date:</strong>{" "}
-                    {new Date(expense.date).toLocaleDateString()}
-                  </Typography>
-                  {expense.notes && (
-                    <Typography color="text.secondary">
-                      <strong>Note:</strong> {expense.notes}
-                    </Typography>
-                  )}
-                </Box>
-
-                <Stack direction="row" spacing={2} mt={3}>
-                  {expense.receiptUrl && (
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => handleOpenReceipt(expense._id, expense.receiptUrl)}
-                    >
-                      View Receipt
-                    </Button>
-                  )}
-                  <Button
-                    variant="contained"
-                    color="success"
-                    size="small"
-                    startIcon={<CheckCircleIcon />}
-                    onClick={() =>
-                      handleStatusChange(expense._id, "approved")
-                    }
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    size="small"
-                    startIcon={<CancelIcon />}
-                    onClick={() => handleRejectClick(expense._id)}
-                  >
-                    Reject
-                  </Button>
-                </Stack>
-              </Paper>
+                <MenuItem value="">All</MenuItem>
+                <MenuItem value="pending">Pending</MenuItem>
+                <MenuItem value="approved">Approved</MenuItem>
+                <MenuItem value="rejected">Rejected</MenuItem>
+              </TextField>
             </Grid>
-          ))}
-        </Grid>
-      )}
 
-      <Dialog open={receiptDialogOpen} onClose={handleCloseReceipt} maxWidth="md" fullWidth>
-        <DialogTitle>Receipt Preview</DialogTitle>
-        <DialogContent sx={{ p: 0, minHeight: 300, display: "flex", justifyContent: "center", alignItems: "center" }}>
-          {selectedReceiptUrl ? (
-            <img
-              src={selectedReceiptUrl}
-              alt="Receipt preview"
-              style={{ width: "100%", maxHeight: 600, objectFit: "contain" }}
+            <Grid sx={{ gridColumn: 'span 2' }}>
+              <TextField
+                select
+                label="Category"
+                value={filters.category}
+                onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+                size="small"
+                fullWidth
+                sx={{ minWidth: 200 }}
+              >
+                <MenuItem value="">All</MenuItem>
+                {categories.map((cat) => (
+                  <MenuItem key={cat} value={cat}>
+                    {cat}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+
+            <Grid sx={{ gridColumn: 'span 2' }}>
+              <Autocomplete
+                freeSolo
+                options={users}
+                value={filters.user}
+                onInputChange={(event, value) => setFilters({ ...filters, user: value })}
+                size="small"
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="User Name"
+                    fullWidth
+                    sx={{ minWidth: 200 }}
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid sx={{ gridColumn: 'span 3' }}>
+              <TextField
+                label="Start Date"
+                type="date"
+                size="small"
+                fullWidth
+                value={filters.startDate}
+                onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+                slotProps={{
+                  inputLabel: { shrink: true }
+                }}
+                sx={{ minWidth: 200 }}
+              />
+            </Grid>
+
+            <Grid sx={{ gridColumn: 'span 3' }}>
+              <TextField
+                label="End Date"
+                type="date"
+                size="small"
+                fullWidth
+                value={filters.endDate}
+                onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+                slotProps={{
+                  inputLabel: { shrink: true }
+                }}
+                sx={{ minWidth: 200 }}
+              />
+            </Grid>
+
+            <Grid sx={{ gridColumn: 'span 2' }}>
+              <TextField
+                select
+                label="Sort By"
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                size="small"
+                fullWidth
+                sx={{ minWidth: 200 }}
+              >
+                <MenuItem value="">None</MenuItem>
+                <MenuItem value="category">Category</MenuItem>
+                <MenuItem value="user">User</MenuItem>
+              </TextField>
+            </Grid>
+
+            <Grid sx={{ gridColumn: 'span 2' }}>
+              <TextField
+                select
+                label="Order"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                size="small"
+                fullWidth
+                sx={{ minWidth: 200 }}
+              >
+                <MenuItem value="asc">A → Z</MenuItem>
+                <MenuItem value="desc">Z → A</MenuItem>
+              </TextField>
+            </Grid>
+          </Grid>
+        </Paper>
+
+        {/* CSV BUTTON SECTION */}
+        <Box display="flex" justifyContent="flex-end" alignItems="center" sx={{ mb: 6 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleExportCSV}
+            startIcon={<DownloadIcon />}
+            sx={{
+              textTransform: "none",
+              fontWeight: 700,
+              borderRadius: 3,
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              px: 4,
+              py: 1.5,
+            }}
+          >
+            Export CSV
+          </Button>
+        </Box>
+
+        {/* EXPENSE LIST */}
+        {loading ? (
+          <Box className="flex justify-center items-center min-h-[60vh]">
+            <CircularProgress sx={{ color: 'white' }} size={60} />
+          </Box>
+        ) : filteredExpenses.length === 0 ? (
+          <Box className="flex justify-center items-center min-h-[60vh]">
+            <Box className="text-center">
+              <Typography variant="h6" sx={{ color: 'white', fontWeight: 700, mb: 2 }}>
+                No expenses match the filters
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                Try adjusting your filter criteria to see more results.
+              </Typography>
+            </Box>
+          </Box>
+        ) : (
+          <Grid container spacing={4}>
+            {filteredExpenses.map((expense) => (
+              <Grid key={expense._id} size={{ xs: 12, sm: 6, lg: 4 }}>
+                <Paper
+                  elevation={6}
+                  sx={{
+                    p: 4,
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    bgcolor: 'rgba(255,255,255,0.95)',
+                    backdropFilter: 'blur(12px)',
+                    borderRadius: 4,
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+                  }}
+                >
+                  <Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                      <Typography variant="h6" sx={{ fontWeight: 800, color: 'primary.main' }}>
+                        {expense.category}
+                      </Typography>
+                      <Box sx={{
+                        px: 2, py: 0.5, borderRadius: 2, fontSize: '0.75rem', fontWeight: 700,
+                        bgcolor: expense.status === "approved" ? 'success.main' : expense.status === "rejected" ? 'error.main' : 'warning.main',
+                        color: 'white'
+                      }}>
+                        {expense.status}
+                      </Box>
+                    </Box>
+
+                    <Typography variant="h5" sx={{ fontWeight: 900, mb: 2 }}>
+                      ₹{expense.amount}
+                    </Typography>
+
+                    <Typography sx={{ color: 'text.secondary', mb: 1, fontWeight: 600 }}>
+                      {expense.user?.name}
+                    </Typography>
+                    <Typography sx={{ color: 'text.secondary', mb: 2, fontSize: '0.875rem' }}>
+                      {expense.user?.email}
+                    </Typography>
+
+                    <Typography sx={{ color: 'text.secondary', mb: 2 }}>
+                      {new Date(expense.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </Typography>
+
+                    {expense.status === "rejected" && expense.rejectionReason && (
+                      <Typography sx={{ color: 'error.main', fontSize: '0.875rem', mb: 2, fontWeight: 600 }}>
+                        Reason: {expense.rejectionReason}
+                      </Typography>
+                    )}
+
+                    {expense.notes && (
+                      <Typography sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
+                        {expense.notes}
+                      </Typography>
+                    )}
+                  </Box>
+
+                  <Stack direction="row" spacing={2} mt={3}>
+                    {expense.receiptUrl && (
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => handleOpenReceipt(expense._id, expense.receiptUrl)}
+                        sx={{ fontWeight: 600, textTransform: 'capitalize' }}
+                      >
+                        View Receipt
+                      </Button>
+                    )}
+                    <Button
+                      variant="contained"
+                      color="success"
+                      size="small"
+                      startIcon={<CheckCircleIcon />}
+                      onClick={() => handleStatusChange(expense._id, "approved")}
+                      sx={{ fontWeight: 600, textTransform: 'capitalize' }}
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      size="small"
+                      startIcon={<CancelIcon />}
+                      onClick={() => handleRejectClick(expense._id)}
+                      sx={{ fontWeight: 600, textTransform: 'capitalize' }}
+                    >
+                      Reject
+                    </Button>
+                  </Stack>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+
+        <Dialog open={receiptDialogOpen} onClose={handleCloseReceipt} maxWidth="md" fullWidth>
+          <DialogTitle sx={{ fontWeight: 800 }}>Receipt Preview</DialogTitle>
+          <DialogContent sx={{ p: 0, minHeight: 300, display: "flex", justifyContent: "center", alignItems: "center" }}>
+            {selectedReceiptUrl ? (
+              <img
+                src={selectedReceiptUrl}
+                alt="Receipt preview"
+                style={{ width: "100%", maxHeight: 600, objectFit: "contain" }}
+              />
+            ) : (
+              <Typography sx={{ p: 4 }}>No receipt available.</Typography>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseReceipt}>Close</Button>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => {
+                handleStatusChange(selectedExpenseId, "approved");
+                handleCloseReceipt();
+              }}
+            >
+              Approve
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => {
+                handleRejectClick(selectedExpenseId);
+                handleCloseReceipt();
+              }}
+            >
+              Reject
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog open={rejectDialogOpen} onClose={() => setRejectDialogOpen(false)} fullWidth maxWidth="sm">
+          <DialogTitle sx={{ fontWeight: 800 }}>Reject Expense</DialogTitle>
+          <DialogContent>
+            <TextField
+              label="Rejection Reason"
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              fullWidth
+              multiline
+              rows={4}
+              margin="normal"
             />
-          ) : (
-            <Typography sx={{ p: 4 }}>No receipt available.</Typography>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseReceipt}>Close</Button>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={() => {
-              handleStatusChange(selectedExpenseId, "approved");
-              handleCloseReceipt();
-            }}
-          >
-            Approve
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              handleRejectClick(selectedExpenseId);
-              handleCloseReceipt();
-            }}
-          >
-            Reject
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog open={rejectDialogOpen} onClose={() => setRejectDialogOpen(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Reject Expense</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Rejection Reason"
-            value={rejectReason}
-            onChange={(e) => setRejectReason(e.target.value)}
-            fullWidth
-            multiline
-            rows={4}
-            margin="normal"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setRejectDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" color="error" onClick={handleRejectSubmit}>
-            Reject
-          </Button>
-        </DialogActions>
-      </Dialog>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setRejectDialogOpen(false)}>Cancel</Button>
+            <Button variant="contained" color="error" onClick={handleRejectSubmit}>
+              Reject
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
     </Box>
   );
 };
